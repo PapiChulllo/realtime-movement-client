@@ -3,37 +3,44 @@ using UnityEngine;
 
 public class GameLogic : MonoBehaviour
 {
-    private Dictionary<int, GameObject> balloons = new Dictionary<int, GameObject>();
-    private Sprite circleTexture;
+    private Dictionary<int, GameObject> players = new Dictionary<int, GameObject>();
 
     void Start()
     {
         NetworkClientProcessing.SetGameLogic(this);
     }
 
-    public void SpawnNewBalloon(int balloonID, Vector2 screenPosition)
+    public void UpdatePlayerPosition(int playerId, Vector2 newPosition)
     {
-        if (circleTexture == null)
-            circleTexture = Resources.Load<Sprite>("Circle");
+        if (!players.ContainsKey(playerId))
+        {
+            // Create a circle using Unity's built-in 2D object
+            GameObject player = new GameObject($"Player_{playerId}");
+            player.AddComponent<SpriteRenderer>();
+            player.AddComponent<CircleCollider2D>();
 
-        GameObject balloon = new GameObject("Balloon");
-        balloon.AddComponent<SpriteRenderer>();
-        balloon.GetComponent<SpriteRenderer>().sprite = circleTexture;
-        balloon.AddComponent<CircleClick>().balloonID = balloonID;
-        balloon.AddComponent<CircleCollider2D>();
+            // Use Unity's default sprite
+            Sprite circleSprite = CreateCircleSprite();
+            player.GetComponent<SpriteRenderer>().sprite = circleSprite;
+            players[playerId] = player;
+        }
 
-        Vector3 pos = Camera.main.ScreenToWorldPoint(new Vector3(screenPosition.x, screenPosition.y, 0));
-        pos.z = 0;
-        balloon.transform.position = pos;
-
-        balloons[balloonID] = balloon;
+        players[playerId].transform.position = new Vector3(newPosition.x, newPosition.y, 0);
     }
 
-    public void RemoveBalloon(int balloonID)
+    // Method to create a simple circle sprite programmatically
+    private Sprite CreateCircleSprite()
     {
-        if (!balloons.ContainsKey(balloonID)) return;
-
-        Destroy(balloons[balloonID]);
-        balloons.Remove(balloonID);
+        Texture2D texture = new Texture2D(128, 128);
+        for (int x = 0; x < texture.width; x++)
+        {
+            for (int y = 0; y < texture.height; y++)
+            {
+                float distance = Vector2.Distance(new Vector2(x, y), new Vector2(texture.width / 2, texture.height / 2));
+                texture.SetPixel(x, y, distance < texture.width / 2 ? Color.white : Color.clear);
+            }
+        }
+        texture.Apply();
+        return Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
     }
 }

@@ -1,16 +1,5 @@
 using UnityEngine;
 
-public enum ClientToServerSignifiers
-{
-    BalloonPopped = 1
-}
-
-public enum ServerToClientSignifiers
-{
-    SpawnBalloon = 1,
-    BalloonPopped = 2
-}
-
 static public class NetworkClientProcessing
 {
     static NetworkClient networkClient;
@@ -19,19 +8,13 @@ static public class NetworkClientProcessing
     static public void ReceivedMessageFromServer(string msg, TransportPipeline pipeline)
     {
         string[] csv = msg.Split(',');
-        int signifier = int.Parse(csv[0]);
 
-        if (signifier == (int)ServerToClientSignifiers.SpawnBalloon)
+        if (csv[0] == "PlayerMoved")
         {
-            int balloonID = int.Parse(csv[1]);
+            int playerId = int.Parse(csv[1]);
             float x = float.Parse(csv[2]);
             float y = float.Parse(csv[3]);
-            gameLogic.SpawnNewBalloon(balloonID, new Vector2(x, y));
-        }
-        else if (signifier == (int)ServerToClientSignifiers.BalloonPopped)
-        {
-            int balloonID = int.Parse(csv[1]);
-            gameLogic.RemoveBalloon(balloonID);
+            gameLogic.UpdatePlayerPosition(playerId, new Vector2(x, y));
         }
     }
 
@@ -42,12 +25,12 @@ static public class NetworkClientProcessing
 
     static public void ConnectionEvent()
     {
-        UnityEngine.Debug.Log("Network Connection Event!");
+        UnityEngine.Debug.Log("Client successfully connected to the server!");
     }
 
     static public void DisconnectionEvent()
     {
-        UnityEngine.Debug.Log("Network Disconnection Event!");
+        UnityEngine.Debug.Log("Client disconnected from the server!");
     }
 
     static public NetworkClient GetNetworkedClient()
