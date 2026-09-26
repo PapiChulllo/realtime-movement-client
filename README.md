@@ -80,9 +80,8 @@ The address is not exposed in the Inspector or a configuration file; `Assets/Scr
 | `Assets/Scripts/NetworkClient.cs` | Driver, endpoint, pipelines, event polling, message framing, sends, and teardown. |
 | `Assets/Scripts/NetworkClientProcessing.cs` | Parses server messages and connects networking to client game logic. |
 | `Assets/Scripts/PlayerMovement.cs` | Reads keyboard input, moves the local object, and reports positions. |
-| `Assets/Scripts/GameLogic.cs` | Creates circle sprites at runtime and updates player proxies by ID. |
+| `Assets/Scripts/GameLogic.cs` | Procedurally creates circle sprite textures at runtime and updates player proxies by ID. |
 | `Assets/Scenes/SampleScene.unity` | Editor scene containing Client, Player, and camera objects. |
-| `Assets/Textures/Resources/Circle.png` | Tracked client texture asset. |
 | `Packages/manifest.json` | Pins Unity Transport and other Unity package dependencies. |
 | `ProjectSettings/` | Unity `2022.3.5f1` project configuration. |
 
